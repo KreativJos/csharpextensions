@@ -28,14 +28,13 @@ Welcome to C# Extensions.  This VSCode extension provides extensions to the IDE 
 **Add property from constructors**
 ![Add property from constructors](./featureimages/fullpropfromctor.gif)
 
-
 This extension traverses up the folder tree to find the project.json or *.csproj and uses that as the parent folder to determine namespaces.
-
 
 -----------------------------------------------------------------------------------------------------------
 
-## Licence 
+## Licence
 
-MIT  
+MIT
 
 See [licence.txt](./licence.txt)
+Legacy Repository: [jchannon/csharpextensions](https://github.com/jchannon/csharpextensions)

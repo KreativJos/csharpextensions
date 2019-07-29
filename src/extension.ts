@@ -15,6 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(vscode.commands.registerCommand('csharpextensions.createClass', createClass));
     context.subscriptions.push(vscode.commands.registerCommand('csharpextensions.createInterface', createInterface));
+    context.subscriptions.push(vscode.commands.registerCommand('csharpextensions.createEnum', createEnum));
 
     const codeActionProvider = new CodeActionProvider();
 
@@ -31,9 +32,14 @@ function createInterface(args: any) {
     promptAndSave(args, 'interface');
 }
 
-function promptAndSave(args: any, templatetype: string) {
-    if (args == null) args = { _fsPath: vscode.workspace.rootPath }
+function createEnum(args) {
+    promptAndSave(args, 'enum');
+}
 
+function promptAndSave(args, templatetype: string) {
+    if (args == null) {
+        args = { _fsPath: vscode.workspace.rootPath }
+    }
     let incomingpath: string = args._fsPath;
 
     vscode.window.showInputBox({ ignoreFocusOut: true, prompt: 'Please enter filename', value: 'new' + templatetype + '.cs' })
@@ -103,7 +109,7 @@ function getProjectRootDirOfFilePath(filepath: string) {
 
         projectrootdir = path.dirname(csprojfiles[0]);
     }
-    
+
     return projectrootdir;
 }
 
@@ -122,7 +128,8 @@ function openTemplateAndSaveNewFile(type: string, namespace: string, filename: s
         .then(doc => {
             let text = doc.getText()
                 .replace('${namespace}', namespace)
-                .replace('${classname}', filename);
+                .replace('${classname}', filename)
+                .replace('${enumname}', filename);
 
             const cursorPosition = findCursorInTemplate(text);
 

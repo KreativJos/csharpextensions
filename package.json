@@ -19,6 +19,7 @@
     "activationEvents": [
         "onLanguage:csharp",
         "onCommand:csharpextensions.createClass",
+        "onCommand:csharpextensions.createEnum",
         "onCommand:csharpextensions.createInterface"
     ],
     "main": "./out/src/extension",
@@ -31,6 +32,10 @@
             {
                 "command": "csharpextensions.createInterface",
                 "title": "New C# Interface"
+            },
+            {
+                "command": "csharpextensions.createEnum",
+                "title": "New C# Enum"
             }
         ],
         "menus": {
@@ -42,6 +47,10 @@
                 {
                     "group": "navigation@-1",
                     "command": "csharpextensions.createInterface"
+                },
+                {
+                    "group": "navigation@-1",
+                    "command": "csharpextensions.createEnum"
                 }
             ]
         },
