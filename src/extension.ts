@@ -58,8 +58,7 @@ function promptAndSave(args: any, templatetype: string) {
 
             projectrootdir = removeTrailingSeparator(projectrootdir);
 
-            const newroot = projectrootdir.substr(projectrootdir.lastIndexOf(path.sep) + 1);
-            const filenamechildpath = newfilepath.substring(newfilepath.lastIndexOf(newroot));
+            const filenamechildpath = newfilepath.substr(projectrootdir.lastIndexOf(path.sep) + 1);
             const pathSepRegEx = os.platform() === "win32" ? /\\/g : /\//g;
             const namespace = path.dirname(filenamechildpath)
                 .replace(pathSepRegEx, '.')
