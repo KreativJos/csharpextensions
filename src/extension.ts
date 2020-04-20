@@ -128,8 +128,7 @@ function openTemplateAndSaveNewFile(type: string, namespace: string, filename: s
         .then(doc => {
             let text = doc.getText()
                 .replace('${namespace}', namespace)
-                .replace('${classname}', filename)
-                .replace('${enumname}', filename);
+                .replace('${classname}', filename);
 
             const cursorPosition = findCursorInTemplate(text);
 
