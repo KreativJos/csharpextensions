@@ -32,11 +32,11 @@ function createInterface(args: any) {
     promptAndSave(args, 'interface');
 }
 
-function createEnum(args) {
+function createEnum(args: any) {
     promptAndSave(args, 'enum');
 }
 
-function promptAndSave(args, templatetype: string) {
+function promptAndSave(args: any, templatetype: string) {
     if (args == null) {
         args = { _fsPath: vscode.workspace.rootPath }
     }
