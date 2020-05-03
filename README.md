@@ -10,6 +10,10 @@ Welcome to C# Extensions.  This VSCode extension provides extensions to the IDE 
 
 ![Add C# Class](./featureimages/newclass.gif)
 
+**Add C# Enum**
+
+![Add C# Enum](./featureimages/newenum.gif)
+
 **Add C# Interface**
 
 ![Add C# Interface](./featureimages/newinterface.gif)
