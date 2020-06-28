@@ -78,17 +78,19 @@
     "scripts": {
         "vscode:prepublish": "node node_modules/typescript/bin/tsc -p ./",
         "compile": "node node_modules/typescript/bin/tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install"
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "mocha --require ts-node/register test/*.ts"
     },
     "devDependencies": {
         "typescript": "^2.0.3",
         "vscode": "^1.0.0",
         "mocha": "^2.3.3",
         "@types/node": "^6.0.40",
-        "@types/mocha": "^2.2.32"
+        "@types/mocha": "^2.2.32",
+        "ts-node": "^8.10.2"
     },
     "dependencies": {
-        "find-parent-dir": "^0.3.0",
-        "find-up-glob": "^1.0.0"
+        "find-up-glob": "^1.0.0",
+        "xml2js": "^0.4.23"
     }
 }

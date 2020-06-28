@@ -1,11 +1,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as os from 'os';
 import CodeActionProvider from './codeActionProvider';
-
-const parentfinder = require('find-parent-dir');
-const findupglob = require('find-up-glob');
+import NamespaceDetector from './namespaceDetector';
 
 export function activate(context: vscode.ExtensionContext) {
     const documentSelector: vscode.DocumentSelector = {
@@ -43,7 +40,7 @@ function promptAndSave(args: any, templatetype: string) {
     let incomingpath: string = args._fsPath;
 
     vscode.window.showInputBox({ ignoreFocusOut: true, prompt: 'Please enter filename', value: 'new' + templatetype + '.cs' })
-        .then(newfilename => {
+        .then(async newfilename => {
             if (typeof newfilename === 'undefined') return;
 
             let newfilepath = incomingpath + path.sep + newfilename;
@@ -55,27 +52,11 @@ function promptAndSave(args: any, templatetype: string) {
 
             newfilepath = correctExtension(newfilepath);
 
-            let projectrootdir = getProjectRootDirOfFilePath(newfilepath);
+            const namespaceDetector = new NamespaceDetector(newfilepath);
+            const namespace = await namespaceDetector.getNamespace();
+            const typename = path.basename(newfilepath, '.cs');
 
-            if (projectrootdir == null) {
-                vscode.window.showErrorMessage("Unable to find project.json or *.csproj");
-                return;
-            }
-
-            projectrootdir = removeTrailingSeparator(projectrootdir);
-
-            const filenamechildpath = newfilepath.substr(projectrootdir.lastIndexOf(path.sep) + 1);
-            const pathSepRegEx = os.platform() === "win32" ? /\\/g : /\//g;
-            const namespace = path.dirname(filenamechildpath)
-                .replace(pathSepRegEx, '.')
-                .replace(/\s+/g, "_")
-                .replace(/-/g, "_");
-
-            const originalfilepath = newfilepath;
-
-            newfilepath = path.basename(newfilepath, '.cs');
-
-            openTemplateAndSaveNewFile(templatetype, namespace, newfilepath, originalfilepath);
+            openTemplateAndSaveNewFile(templatetype, namespace, typename, newfilepath);
         }, errOnInput => {
             console.error('Error on input', errOnInput);
 
@@ -90,27 +71,6 @@ function correctExtension(filename: string) {
     }
 
     return filename;
-}
-
-function removeTrailingSeparator(filepath: string) {
-    if (filepath[filepath.length - 1] === path.sep)
-        filepath = filepath.substr(0, filepath.length - 1);
-
-    return filepath;
-}
-
-function getProjectRootDirOfFilePath(filepath: string) {
-    let projectrootdir = parentfinder.sync(path.dirname(filepath), 'project.json');
-
-    if (projectrootdir == null) {
-        const csprojfiles = findupglob.sync('*.csproj', { cwd: path.dirname(filepath) });
-
-        if (csprojfiles == null) return null;
-
-        projectrootdir = path.dirname(csprojfiles[0]);
-    }
-
-    return projectrootdir;
 }
 
 function openTemplateAndSaveNewFile(type: string, namespace: string, filename: string, originalfilepath: string) {
