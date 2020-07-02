@@ -21,10 +21,16 @@ export default class CsprojReader implements Nameable {
         this.xmlParser.parseString(this.xml, (error: any, result: any) => {
             if (result === undefined
                 || result.Project.PropertyGroup === undefined
-                || result.Project.PropertyGroup[0].RootNamespace === undefined) {
+                || !result.Project.PropertyGroup.length) {
                 return undefined;
             }
-            foundNamespace = result.Project.PropertyGroup[0].RootNamespace[0];
+
+            for (const propertyGroup of result.Project.PropertyGroup) {
+                if (propertyGroup.RootNamespace) {
+                    foundNamespace = propertyGroup.RootNamespace[0];
+                    break;
+                }
+            };
         });
         return foundNamespace;
     }
