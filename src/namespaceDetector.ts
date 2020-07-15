@@ -35,7 +35,7 @@ export default class NamespaceDetector {
         const fileContent = await this.read(Uri.file(csprojFile));
         let rootNamespace = new CsprojReader(fileContent).getRootNamespace();
         if (rootNamespace === undefined) {
-            rootNamespace = path.basename(csprojFile, '.csproj')
+            return undefined;
         }
 
         return this.calculateFullNamespace(rootNamespace, path.dirname(csprojFile));
