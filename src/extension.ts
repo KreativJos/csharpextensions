@@ -37,7 +37,7 @@ function promptAndSave(args: any, templatetype: string) {
     if (args == null) {
         args = { _fsPath: vscode.workspace.rootPath }
     }
-    let incomingpath: string = args._fsPath;
+    let incomingpath: string = args._fsPath || args.fsPath || args.path;
 
     vscode.window.showInputBox({ ignoreFocusOut: true, prompt: 'Please enter filename', value: 'new' + templatetype + '.cs' })
         .then(async newfilename => {
