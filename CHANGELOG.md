@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.6] - 2020-07-15
+### Fixed
+- crash when creating new file in CodeSpaces - Added by [danyhoron](https://github.com/danyhoron)
+
 ## [1.3.5] - 2020-07-03
 ### Added
 - RootNamespace detection - Added by [PoLaKoSz](https://github.com/PoLaKoSz)
