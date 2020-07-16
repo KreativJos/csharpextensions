@@ -33,7 +33,7 @@ export default class NamespaceDetector {
 
         const csprojFile = csprojs[0];
         const fileContent = await this.read(Uri.file(csprojFile));
-        let rootNamespace = new CsprojReader(fileContent).getRootNamespace();
+        const rootNamespace = new CsprojReader(fileContent).getRootNamespace();
         if (rootNamespace === undefined) {
             return undefined;
         }
