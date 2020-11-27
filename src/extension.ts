@@ -89,9 +89,9 @@ async function openTemplateAndSaveNewFile(type: string, namespace: string, filen
     const templateFilePath = path.join(extension.extensionPath, 'templates', templatefileName);
 
     try {
-        const doc = await vscode.workspace.openTextDocument(templateFilePath);
+        const doc = await fs.readFile(templateFilePath, 'utf-8');
 
-        let text = doc.getText()
+        let text = doc
             .replace('${namespace}', namespace)
             .replace('${classname}', filename);
 
