@@ -18,39 +18,32 @@
     ],
     "activationEvents": [
         "onLanguage:csharp",
-        "onCommand:csharpextensions.createClass",
-        "onCommand:csharpextensions.createEnum",
-        "onCommand:csharpextensions.createInterface"
+        "onCommand:csharpextensions.changeBuildAction",
+        "onCommand:csharpextensions.createFile"
     ],
     "main": "./out/src/extension",
     "contributes": {
         "commands": [
             {
-                "command": "csharpextensions.createClass",
-                "title": "New C# Class"
+                "command": "csharpextensions.createFile",
+                "title": "Create new file from template"
             },
             {
-                "command": "csharpextensions.createInterface",
-                "title": "New C# Interface"
-            },
-            {
-                "command": "csharpextensions.createEnum",
-                "title": "New C# Enum"
+                "command": "csharpextensions.changeBuildAction",
+                "title": "Change build action"
             }
         ],
         "menus": {
             "explorer/context": [
                 {
+                    "command": "csharpextensions.createFile",
                     "group": "navigation@-1",
-                    "command": "csharpextensions.createClass"
+                    "when": "explorerResourceIsFolder"
                 },
                 {
+                    "command": "csharpextensions.changeBuildAction",
                     "group": "navigation@-1",
-                    "command": "csharpextensions.createInterface"
-                },
-                {
-                    "group": "navigation@-1",
-                    "command": "csharpextensions.createEnum"
+                    "when": "!explorerResourceIsFolder && resourceScheme == file && resourceExtname != .sln && resourceExtname != .shproj && resourceExtname != .projitems && resourceExtname != .csproj"
                 }
             ]
         },
@@ -82,15 +75,16 @@
         "test": "mocha --require ts-node/register test/*.ts"
     },
     "devDependencies": {
-        "typescript": "^2.0.3",
+        "typescript": "^4.0.2",
         "vscode": "^1.0.0",
         "mocha": "^2.3.3",
-        "@types/node": "^6.0.40",
+        "@types/node": "^12.12.0",
         "@types/mocha": "^2.2.32",
         "ts-node": "^8.10.2"
     },
     "dependencies": {
         "find-up-glob": "^1.0.0",
-        "xml2js": "^0.4.23"
+        "xml2js": "^0.4.23",
+        "ncp": "^2.0.0"
     }
 }
