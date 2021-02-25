@@ -40,7 +40,7 @@
             },
             {
                 "command": "csharpextensions.createController",
-                "title": "New C# controller"
+                "title": "New C# Controller"
             }
         ],
         "menus": {
