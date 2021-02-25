@@ -2,14 +2,14 @@
     "name": "csharpextensions",
     "displayName": "C# Extensions",
     "description": "C# IDE Extensions for VSCode",
-    "author": "KreativJos",
+    "author": "tdallau",
     "license": "MIT",
-    "version": "1.3.6",
-    "publisher": "kreativ-software",
+    "version": "1.4.0",
+    "publisher": "tdallau-csharpextensions",
     "engines": {
         "vscode": "^1.42.0"
     },
-    "repository": "https://github.com/kreativjos/csharpextensions",
+    "repository": "https://github.com/Tdallau/csharpextensions",
     "icon": "logo.png",
     "categories": [
         "Programming Languages",
@@ -20,7 +20,8 @@
         "onLanguage:csharp",
         "onCommand:csharpextensions.createClass",
         "onCommand:csharpextensions.createEnum",
-        "onCommand:csharpextensions.createInterface"
+        "onCommand:csharpextensions.createInterface",
+        "onCommand:csharpextensions.createController"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -36,6 +37,10 @@
             {
                 "command": "csharpextensions.createEnum",
                 "title": "New C# Enum"
+            },
+            {
+                "command": "csharpextensions.createController",
+                "title": "New C# controller"
             }
         ],
         "menus": {
@@ -51,6 +56,10 @@
                 {
                     "group": "navigation@-1",
                     "command": "csharpextensions.createEnum"
+                },
+                {
+                    "group": "navigation@-1",
+                    "command": "csharpextensions.createController"
                 }
             ]
         },

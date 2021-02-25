@@ -1,4 +1,4 @@
-# Customized version of https://github.com/jchannon/csharpextensions, -> https://github.com/KreativJos/csharpextensions
+# Customized version of https://github.com/KreativJos/csharpextensions -> https://github.com/Tdallau/csharpextensions
 
 # C# Extensions
 

@@ -7,7 +7,7 @@ if [[ $test_output == *"failing"* ]]; then
     echo "$test_output"
 else
     vsce package
-    sed -e 's/"publisher": "kreativ-software"/"publisher": "jsw"/g' ./package.json >./package.json.temp
+    sed -e 's/"publisher": "tdallau-csharpextensions"/"publisher": "jsw"/g' ./package.json >./package.json.temp
     mv package.json package.json.2.temp
     mv package.json.temp package.json
     ovsx publish -p $(cat ovsx.key)
