@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2021-02-25
+### Added
+- option to add webapi controller - Added by [tdallau](https://github.com/Tdallau)
+
 ## [1.3.6] - 2020-07-15
 ### Fixed
 - crash when creating new file in CodeSpaces - Added by [danyhoron](https://github.com/danyhoron)

@@ -13,6 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand('csharpextensions.createClass', createClass));
     context.subscriptions.push(vscode.commands.registerCommand('csharpextensions.createInterface', createInterface));
     context.subscriptions.push(vscode.commands.registerCommand('csharpextensions.createEnum', createEnum));
+    context.subscriptions.push(vscode.commands.registerCommand('csharpextensions.createController', createController));
 
     const codeActionProvider = new CodeActionProvider();
 
@@ -31,6 +32,10 @@ function createInterface(args: any) {
 
 function createEnum(args: any) {
     promptAndSave(args, 'enum');
+}
+
+function createController(args: any) {
+    promptAndSave(args, 'controller');
 }
 
 function promptAndSave(args: any, templatetype: string) {
@@ -75,7 +80,7 @@ function correctExtension(filename: string) {
 
 function openTemplateAndSaveNewFile(type: string, namespace: string, filename: string, originalfilepath: string) {
     const templatefileName = type + '.tmpl';
-    const extension = vscode.extensions.getExtension('kreativ-software.csharpextensions');
+    const extension = vscode.extensions.getExtension('tdallau-csharpextensions.csharpextensions');
 
     if (!extension) {
         vscode.window.showErrorMessage('Weird, but the extension you are currently using could not be found');
