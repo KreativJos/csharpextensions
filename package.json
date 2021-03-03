@@ -4,7 +4,7 @@
     "description": "C# IDE Extensions for VSCode",
     "author": "tdallau",
     "license": "MIT",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "publisher": "tdallau-csharpextensions",
     "engines": {
         "vscode": "^1.42.0"
