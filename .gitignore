@@ -1,5 +1,7 @@
 out
+dist
 node_modules
 *.vsix
 /yarn-error.log
 ovsx.key
+.vscode-test/
