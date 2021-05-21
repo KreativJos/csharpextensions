@@ -18,12 +18,12 @@ export default class ProjectJsonReader implements Nameable {
                 const jsonObject = JSON.parse(this.json);
 
                 if (jsonObject.tooling === undefined) {
-                    return undefined;
+                    return resolve(undefined);
                 }
 
-                return jsonObject.tooling.defaultNamespace;
+                return resolve(jsonObject.tooling.defaultNamespace);
             } catch {
-                return undefined;
+                return resolve(undefined);
             }
         });
     }
