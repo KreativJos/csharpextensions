@@ -12,17 +12,19 @@ export default class ProjectJsonReader implements Nameable {
         this.json = fileContent;
     }
 
-    public getRootNamespace(): string | undefined {
-        try {
-            const jsonObject = JSON.parse(this.json);
+    public getRootNamespace(): Promise<string | undefined> {
+        return new Promise((resolve, reject) => {
+            try {
+                const jsonObject = JSON.parse(this.json);
 
-            if (jsonObject.tooling === undefined) {
+                if (jsonObject.tooling === undefined) {
+                    return undefined;
+                }
+
+                return jsonObject.tooling.defaultNamespace;
+            } catch {
                 return undefined;
             }
-
-            return jsonObject.tooling.defaultNamespace;
-        } catch {
-            return undefined;
-        }
+        });
     }
 }

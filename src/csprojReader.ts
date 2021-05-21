@@ -16,14 +16,17 @@ export default class CsprojReader implements Nameable {
         this.xmlParser = new xml2js.Parser();
     }
 
-    public getRootNamespace(): string | undefined {
-        let foundNamespace = undefined;
-        this.xmlParser.parseString(this.xml, (error: any, result: any) => {
+    public async getRootNamespace(): Promise<string | undefined> {
+        try {
+            const result = await this.xmlParser.parseStringPromise(this.xml);
+
             if (result === undefined
                 || result.Project.PropertyGroup === undefined
                 || !result.Project.PropertyGroup.length) {
                 return undefined;
             }
+
+            let foundNamespace = undefined;
 
             for (const propertyGroup of result.Project.PropertyGroup) {
                 if (propertyGroup.RootNamespace) {
@@ -31,7 +34,12 @@ export default class CsprojReader implements Nameable {
                     break;
                 }
             };
-        });
-        return foundNamespace;
+
+            return foundNamespace;
+        } catch (errParsingXml) {
+            console.error(`Error parsing project xml`, errParsingXml);
+        }
+
+        return undefined;
     }
 }

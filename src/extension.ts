@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as fs from 'fs';
+import { EOL } from 'os';
+import { promises as fs } from 'fs';
 import CodeActionProvider from './codeActionProvider';
 import NamespaceDetector from './namespaceDetector';
 
@@ -15,53 +16,56 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand('csharpextensions.createEnum', createEnum));
 
     const codeActionProvider = new CodeActionProvider();
-
-    let disposable = vscode.languages.registerCodeActionsProvider(documentSelector, codeActionProvider);
+    const disposable = vscode.languages.registerCodeActionsProvider(documentSelector, codeActionProvider);
 
     context.subscriptions.push(disposable);
 }
 
-function createClass(args: any) {
-    promptAndSave(args, 'class');
+async function createClass(args: any) {
+    await promptAndSave(args, 'class');
 }
 
-function createInterface(args: any) {
-    promptAndSave(args, 'interface');
+async function createInterface(args: any) {
+    await promptAndSave(args, 'interface');
 }
 
-function createEnum(args: any) {
-    promptAndSave(args, 'enum');
+async function createEnum(args: any) {
+    await promptAndSave(args, 'enum');
 }
 
-function promptAndSave(args: any, templatetype: string) {
+async function promptAndSave(args: any, templatetype: string) {
     if (args == null) {
         args = { _fsPath: vscode.workspace.rootPath }
     }
-    let incomingpath: string = args._fsPath || args.fsPath || args.path;
 
-    vscode.window.showInputBox({ ignoreFocusOut: true, prompt: 'Please enter filename', value: 'new' + templatetype + '.cs' })
-        .then(async newfilename => {
-            if (typeof newfilename === 'undefined') return;
+    const incomingpath: string = args._fsPath || args.fsPath || args.path;
 
-            let newfilepath = incomingpath + path.sep + newfilename;
+    try {
+        const newfilename = await vscode.window.showInputBox({ ignoreFocusOut: true, prompt: 'Please enter filename', value: 'new' + templatetype + '.cs' });
 
-            if (fs.existsSync(newfilepath)) {
-                vscode.window.showErrorMessage("File already exists");
-                return;
-            }
+        if (typeof newfilename === 'undefined' || newfilename === '') return;
 
-            newfilepath = correctExtension(newfilepath);
+        let newfilepath = incomingpath + path.sep + newfilename;
 
-            const namespaceDetector = new NamespaceDetector(newfilepath);
-            const namespace = await namespaceDetector.getNamespace();
-            const typename = path.basename(newfilepath, '.cs');
+        newfilepath = correctExtension(newfilepath);
 
-            openTemplateAndSaveNewFile(templatetype, namespace, typename, newfilepath);
-        }, errOnInput => {
-            console.error('Error on input', errOnInput);
+        try {
+            await fs.access(newfilepath);
 
-            vscode.window.showErrorMessage('Error on input. See extensions log for more info');
-        });
+            vscode.window.showErrorMessage(`File already exists: ${EOL}${newfilepath}`);
+            return;
+        } catch { }
+
+        const namespaceDetector = new NamespaceDetector(newfilepath);
+        const namespace = await namespaceDetector.getNamespace();
+        const typename = path.basename(newfilepath, '.cs');
+
+        await openTemplateAndSaveNewFile(templatetype, namespace, typename, newfilepath);
+    } catch (errOnInput) {
+        console.error('Error on input', errOnInput);
+
+        vscode.window.showErrorMessage('Error on input. See extensions log for more info');
+    };
 }
 
 function correctExtension(filename: string) {
@@ -73,7 +77,7 @@ function correctExtension(filename: string) {
     return filename;
 }
 
-function openTemplateAndSaveNewFile(type: string, namespace: string, filename: string, originalfilepath: string) {
+async function openTemplateAndSaveNewFile(type: string, namespace: string, filename: string, originalfilepath: string) {
     const templatefileName = type + '.tmpl';
     const extension = vscode.extensions.getExtension('kreativ-software.csharpextensions');
 
@@ -84,34 +88,34 @@ function openTemplateAndSaveNewFile(type: string, namespace: string, filename: s
 
     const templateFilePath = path.join(extension.extensionPath, 'templates', templatefileName);
 
-    vscode.workspace.openTextDocument(templateFilePath)
-        .then(doc => {
-            let text = doc.getText()
-                .replace('${namespace}', namespace)
-                .replace('${classname}', filename);
+    try {
+        const doc = await vscode.workspace.openTextDocument(templateFilePath);
 
-            const cursorPosition = findCursorInTemplate(text);
+        let text = doc.getText()
+            .replace('${namespace}', namespace)
+            .replace('${classname}', filename);
 
-            text = text.replace('${cursor}', '');
+        const cursorPosition = findCursorInTemplate(text);
 
-            fs.writeFileSync(originalfilepath, text);
+        text = text.replace('${cursor}', '');
 
-            vscode.workspace.openTextDocument(originalfilepath).then(doc => {
-                vscode.window.showTextDocument(doc).then(editor => {
-                    if (cursorPosition != null) {
-                        const newselection = new vscode.Selection(cursorPosition, cursorPosition);
+        await fs.writeFile(originalfilepath, text);
 
-                        editor.selection = newselection;
-                    }
-                });
-            });
-        }, errTryingToCreate => {
-            const errorMessage = `Error trying to create file '${originalfilepath}' from template '${templatefileName}'`;
+        const openedDoc = await vscode.workspace.openTextDocument(originalfilepath)
+        const editor = await vscode.window.showTextDocument(openedDoc);
 
-            console.error(errorMessage, errTryingToCreate);
+        if (cursorPosition != null) {
+            const newselection = new vscode.Selection(cursorPosition, cursorPosition);
 
-            vscode.window.showErrorMessage(errorMessage);
-        });
+            editor.selection = newselection;
+        }
+    } catch (errTryingToCreate) {
+        const errorMessage = `Error trying to create file '${originalfilepath}' from template '${templatefileName}'`;
+
+        console.error(errorMessage, errTryingToCreate);
+
+        vscode.window.showErrorMessage(errorMessage);
+    }
 }
 
 function findCursorInTemplate(text: string): vscode.Position | null {

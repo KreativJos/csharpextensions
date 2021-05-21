@@ -45,7 +45,7 @@ export default class CodeActionProvider implements vscode.CodeActionProvider {
         });
     }
 
-    private executeCtorFromProperties(args: ConstructorFromPropertiesArgument) {
+    private async executeCtorFromProperties(args: ConstructorFromPropertiesArgument) {
         const tabSize = vscode.workspace.getConfiguration().get('editor.tabSize', 4);
         let ctorParams = new Array<string>();
 
@@ -75,24 +75,27 @@ export default class CodeActionProvider implements vscode.CodeActionProvider {
         const ctorEdit = new vscode.TextEdit(range, ctorStatement);
 
         edits.push(ctorEdit)
-        edit.set(args.document.uri, edits);
+        
+        await this.formatDocument(args.document.uri, edit, edits);
+    }
+
+    private async formatDocument(documentUri: vscode.Uri, edit: vscode.WorkspaceEdit, edits: Array<vscode.TextEdit>) {
+        edit.set(documentUri, edits);
 
         let reFormatAfterChange = vscode.workspace.getConfiguration().get('csharpextensions.reFormatAfterChange', true);
-        let applyPromise = vscode.workspace.applyEdit(edit)
+        
+        await vscode.workspace.applyEdit(edit);
 
         if (reFormatAfterChange) {
-            applyPromise.then(() => {
-                vscode.commands.executeCommand<vscode.TextEdit[]>('vscode.executeFormatDocumentProvider', args.document.uri)
-                    .then(formattingEdits => {
-                        if (formattingEdits !== undefined) {
-                            let formatEdit = new vscode.WorkspaceEdit();
+            const formattingEdits = await vscode.commands.executeCommand<vscode.TextEdit[]>('vscode.executeFormatDocumentProvider', documentUri);
 
-                            formatEdit.set(args.document.uri, formattingEdits);
+            if (formattingEdits !== undefined) {
+                let formatEdit = new vscode.WorkspaceEdit();
 
-                            vscode.workspace.applyEdit(formatEdit);
-                        }
-                    });
-            })
+                formatEdit.set(documentUri, formattingEdits);
+
+                vscode.workspace.applyEdit(formatEdit);
+            }
         }
     }
 
@@ -175,7 +178,7 @@ export default class CodeActionProvider implements vscode.CodeActionProvider {
         return null;
     }
 
-    private initializeMemberFromCtor(args: InitializeFieldFromConstructor) {
+    private async initializeMemberFromCtor(args: InitializeFieldFromConstructor) {
         let edit = new vscode.WorkspaceEdit();
 
         const bodyStartRange = new vscode.Range(args.constructorBodyStart, args.constructorBodyStart)
@@ -192,25 +195,7 @@ export default class CodeActionProvider implements vscode.CodeActionProvider {
         if (args.document.getText().indexOf(args.memberGeneration.assignment.trim()) == -1)
             edits.push(memberInitEdit);
 
-        edit.set(args.document.uri, edits);
-
-        const reFormatAfterChange = vscode.workspace.getConfiguration().get('csharpextensions.reFormatAfterChange', true);
-        const applyPromise = vscode.workspace.applyEdit(edit);
-
-        if (reFormatAfterChange) {
-            applyPromise.then(() => {
-                vscode.commands.executeCommand<vscode.TextEdit[]>('vscode.executeFormatDocumentProvider', args.document.uri)
-                    .then(formattingEdits => {
-                        if (formattingEdits !== undefined) {
-                            let formatEdit = new vscode.WorkspaceEdit();
-
-                            formatEdit.set(args.document.uri, formattingEdits);
-
-                            vscode.workspace.applyEdit(formatEdit);
-                        }
-                    });
-            })
-        }
+        await this.formatDocument(args.document.uri, edit, edits);
     }
 
     private getInitializeFromCtorCommand(document: vscode.TextDocument, range: vscode.Range, context: vscode.CodeActionContext, token: vscode.CancellationToken, memberGenerationType: MemberGenerationType): vscode.Command | null {

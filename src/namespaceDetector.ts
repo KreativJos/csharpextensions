@@ -27,13 +27,16 @@ export default class NamespaceDetector {
 
     private async fromCsproj(): Promise<string | undefined> {
         const csprojs: string[] = await findupglob('*.csproj', { cwd: path.dirname(this.filePath) });
+
         if (csprojs === null || csprojs.length < 1) {
             return undefined;
         }
 
         const csprojFile = csprojs[0];
         const fileContent = await this.read(Uri.file(csprojFile));
-        const rootNamespace = new CsprojReader(fileContent).getRootNamespace();
+        const projectReader = new CsprojReader(fileContent);
+        const rootNamespace = await projectReader.getRootNamespace();
+
         if (rootNamespace === undefined) {
             return undefined;
         }
@@ -43,6 +46,7 @@ export default class NamespaceDetector {
 
     private async fromProjectJson(): Promise<string | undefined> {
         const jsonFiles: string[] = await findupglob('project.json', { cwd: path.dirname(this.filePath) });
+        
         if (jsonFiles === null || jsonFiles.length < 1) {
             return undefined;
         }
@@ -50,7 +54,9 @@ export default class NamespaceDetector {
         const projectJsonFile = jsonFiles[0];
         const projectJsonDir = path.dirname(projectJsonFile);
         const fileContent = await this.read(Uri.file(projectJsonFile));
-        const rootNamespace = new ProjectJsonReader(fileContent).getRootNamespace();
+        const projectReader = new ProjectJsonReader(fileContent);
+        const rootNamespace = await projectReader.getRootNamespace();
+
         if (rootNamespace === undefined) {
             return undefined;
         }
