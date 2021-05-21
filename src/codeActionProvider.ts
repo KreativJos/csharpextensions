@@ -9,6 +9,10 @@ export default class CodeActionProvider implements vscode.CodeActionProvider {
         initializeMemberFromCtor: 'csharpextensions.initializeMemberFromCtor',
     };
 
+    private readonly _readonlyRegex = new RegExp(/(public|private|protected)\s(\w+)\s(\w+)\s?{\s?(get;)\s?(private\s)?(set;)?\s?}/g);
+    private readonly _classRegex = new RegExp(/(private|internal|public|protected)\s?(static)?\sclass\s(\w*)/g);
+    private readonly _generalRegex = new RegExp(/(public|private|protected)\s(.*?)\(([\s\S]*?)\)/gi);
+
     constructor() {
         vscode.commands.registerCommand(this._commandIds.initializeMemberFromCtor, this.initializeMemberFromCtor, this);
         vscode.commands.registerCommand(this._commandIds.ctorFromProperties, this.executeCtorFromProperties, this);
@@ -106,9 +110,8 @@ export default class CodeActionProvider implements vscode.CodeActionProvider {
         let lineNo = 0;
 
         while (lineNo < document.lineCount) {
-            const readonlyRegex = new RegExp(/(public|private|protected)\s(\w+)\s(\w+)\s?{\s?(get;)\s?(private\s)?(set;)?\s?}/g);
             const textLine = document.lineAt(lineNo);
-            const match = readonlyRegex.exec(textLine.text);
+            const match = this._readonlyRegex.exec(textLine.text);
 
             if (match) {
                 const foundClass = this.findClassFromLine(document, lineNo);
@@ -152,11 +155,9 @@ export default class CodeActionProvider implements vscode.CodeActionProvider {
     }
 
     private findClassFromLine(document: vscode.TextDocument, lineNo: number): CSharpClassDefinition | null {
-        const classRegex = new RegExp(/(private|internal|public|protected)\s?(static)?\sclass\s(\w*)/g);
-
         while (lineNo > 0) {
             const line = document.lineAt(lineNo);
-            const match = classRegex.exec(line.text);
+            const match = this._classRegex.exec(line.text);
 
             if (match != null && match) {
                 return {
@@ -223,8 +224,7 @@ export default class CodeActionProvider implements vscode.CodeActionProvider {
 
         if (!wordRange) return null;
 
-        const regex = new RegExp(/(public|private|protected)\s(.*?)\(([\s\S]*?)\)/gi);
-        const matches = regex.exec(surrounding);
+        const matches = this._generalRegex.exec(surrounding);
 
         if (!matches) return null;
 
