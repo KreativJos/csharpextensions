@@ -24,33 +24,45 @@
     ],
     "main": "./out/src/extension",
     "contributes": {
+        "submenus": [
+            {
+                "id": "csharpextensions.new",
+                "label": "New C#"
+            }
+        ],
         "commands": [
             {
                 "command": "csharpextensions.createClass",
-                "title": "New C# Class"
+                "title": "Class"
             },
             {
                 "command": "csharpextensions.createInterface",
-                "title": "New C# Interface"
+                "title": "Interface"
             },
             {
                 "command": "csharpextensions.createEnum",
-                "title": "New C# Enum"
+                "title": "Enum"
             }
         ],
         "menus": {
-            "explorer/context": [
+            "csharpextensions.new": [
                 {
-                    "group": "navigation@-1",
-                    "command": "csharpextensions.createClass"
+                    "command": "csharpextensions.createClass",
+                    "group": "navigation@0"
                 },
                 {
-                    "group": "navigation@-1",
+                    "group": "navigation@1",
                     "command": "csharpextensions.createInterface"
                 },
                 {
-                    "group": "navigation@-1",
+                    "group": "navigation@2",
                     "command": "csharpextensions.createEnum"
+                }
+            ],
+            "explorer/context": [
+                {
+                    "submenu": "csharpextensions.new",
+                    "group": "navigation@-1"
                 }
             ]
         },
@@ -76,28 +88,28 @@
         }
     },
     "scripts": {
-		"vscode:prepublish": "yarn run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "yarn run compile && yarn run lint",
-		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/vscode": "^1.56.0",
-		"@types/glob": "^7.1.3",
-		"@types/mocha": "^8.0.4",
-		"@types/node": "^12.11.7",
-		"eslint": "^7.19.0",
-		"@typescript-eslint/eslint-plugin": "^4.14.1",
-		"@typescript-eslint/parser": "^4.14.1",
-		"glob": "^7.1.6",
-		"mocha": "^8.2.1",
-		"typescript": "^4.1.3",
-		"vscode-test": "^1.5.0"
-	},
-	"dependencies": {
-		"find-up-glob": "^1.0.0",
-		"xml2js": "^0.4.23"
-	}
+        "vscode:prepublish": "yarn run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "yarn run compile && yarn run lint",
+        "lint": "eslint src --ext ts",
+        "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.56.0",
+        "@types/glob": "^7.1.3",
+        "@types/mocha": "^8.0.4",
+        "@types/node": "^12.11.7",
+        "eslint": "^7.19.0",
+        "@typescript-eslint/eslint-plugin": "^4.14.1",
+        "@typescript-eslint/parser": "^4.14.1",
+        "glob": "^7.1.6",
+        "mocha": "^8.2.1",
+        "typescript": "^4.1.3",
+        "vscode-test": "^1.5.0"
+    },
+    "dependencies": {
+        "find-up-glob": "^1.0.0",
+        "xml2js": "^0.4.23"
+    }
 }
